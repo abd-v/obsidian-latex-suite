@@ -16,6 +16,9 @@ declare global {
 declare module "obsidian" {
 	interface App {
 		isVimEnabled?: () => boolean;
+		plugins?: {
+			enabledPlugins?: Set<string>;
+		};
 	}
 	interface Editor {
 		cm: EditorView

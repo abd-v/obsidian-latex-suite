@@ -17,6 +17,7 @@ import type { GroupedSnippets, LatexSuiteCMSettings } from "./settings/settings"
 import { getFilePathFromState, showNotice } from "./editor_extensions/obsidian_utils";
 import { EditorState, StateField } from "@codemirror/state";
 import { serializeSnippetLike, type Snippet } from "./snippets/snippets";
+import { KEYMAP_SCOPE } from "./plugin_identity";
 
 export const handleUpdate = (update: ViewUpdate) => {
 	const settings = getLatexSuiteConfig(update.state);
@@ -57,7 +58,7 @@ export const keyboardEventPlugin = ViewPlugin.fromClass(class {
 				event.ctrlKey || event.metaKey,
 				isComposing(view, event),
 				view,
-			) || runScopeHandlers(view, event, "latex-suite");
+			) || runScopeHandlers(view, event, KEYMAP_SCOPE);
 
 		return success;
 	}
@@ -92,7 +93,7 @@ export const onInput = (view: EditorView, _from: number, _to: number, text: stri
 			lastKeyboardEvent.ctrlKey || lastKeyboardEvent.metaKey,
 			isComposing(view, lastKeyboardEvent),
 			view
-		) || runScopeHandlers(view, event, "latex-suite")
+		) || runScopeHandlers(view, event, KEYMAP_SCOPE)
 		if (success) {
 			forceEndComposition(view);
 			return true;
@@ -129,7 +130,7 @@ export const handleKeydown = (key: string, ctrlKey: boolean, isIME: boolean, vie
 	return false;
 };
 
-type LatexSuiteKeyBinding = KeyBinding & {scope: "latex-suite"};
+type LatexSuiteKeyBinding = KeyBinding & {scope: typeof KEYMAP_SCOPE};
 
 /**
  * Get the keymaps specific for Latex Suite. These keymaps only run in scope `latex-suite`.
@@ -265,7 +266,7 @@ function getKeymaps(settings: LatexSuiteCMSettings, snippets: Snippet[]): LatexS
 
 	return keybindings.map((keybinding) => ({
 		...keybinding,
-		scope: "latex-suite",
+		scope: KEYMAP_SCOPE,
 	}));
 }
 

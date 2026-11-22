@@ -157,8 +157,8 @@ body.latex-suite-center-display-math mjx-container[jax="CHTML"][display="true"] 
 }
 
 /* @settings
-name: Latex Suite
-id: obsidian-latex-suite
+name: Latex Suite (Custom)
+id: latex-suite-custom
 settings:
 	- id: snippets
 	  title: Snippets

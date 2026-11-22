@@ -78,12 +78,12 @@ export async function parseSnippetVariables(snippetVariablesStr: string, identif
 	return snippetVariables;
 }
 const preamble = String.raw`
-var __latex_suite_require = window.__latex_suite_require;
+var __latex_suite_custom_require = window.__latex_suite_custom_require;
 function require(module) {
-	if (!__latex_suite_require) {
-		__latex_suite_require = window.__latex_suite_require;
+	if (!__latex_suite_custom_require) {
+		__latex_suite_custom_require = window.__latex_suite_custom_require;
 	}
-	return __latex_suite_require(module);
+	return __latex_suite_custom_require(module);
 }
 `
 
@@ -100,11 +100,11 @@ function latex_suite_require(default_snippets: SnippetVariables, pluginApi: Plug
 }
 
 declare global {
-	var __latex_suite_require: ReturnType<typeof latex_suite_require>;
+	var __latex_suite_custom_require: ReturnType<typeof latex_suite_require>;
 }
 
 export async function parseSnippets(snippetsStr: string, snippetVariables: SnippetVariables, identifier: string, pluginApi: PluginSnippetApi) {
-	window.__latex_suite_require = latex_suite_require(snippetVariables, pluginApi);
+	window.__latex_suite_custom_require = latex_suite_require(snippetVariables, pluginApi);
 	const rawSnippets = await importRaw(snippetsStr + preamble, identifier);
 
 	let parsedSnippets;

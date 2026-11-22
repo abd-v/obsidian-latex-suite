@@ -36,6 +36,7 @@ import { snippetApi, type PluginSnippetApi } from "./snippets/luasnip_api";
 import { default_mapping, MappingSchema, type RawConcealMapping } from "./editor_extensions/conceal_maps";
 import { serializeSnippetLike } from "./snippets/snippets";
 import { mathlessArgsSchema, type MathlessMacroArgs } from "./editor_context/default_text_areas";
+import { ORIGINAL_PLUGIN_ID } from "./plugin_identity";
 
 /** Body class that styles.css uses to center display math. */
 const CENTER_DISPLAY_MATH_CLASS = "latex-suite-center-display-math";
@@ -158,6 +159,7 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 
 		this.legacyEditorWarning();
 		this.IMEEditorWarning();
+		this.app.workspace.onLayoutReady(() => this.originalPluginWarning());
 
 		// Appearance classes have to be applied to the body of every window, including pop-outs.
 		this.app.workspace.onLayoutReady(() => {
@@ -194,6 +196,17 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 		for (const doc of this.appearanceDocuments) {
 			doc.body.toggleClass(CENTER_DISPLAY_MATH_CLASS, this.settings.centerDisplayMath);
 		}
+	}
+
+	/**
+	 * Both plugins react to the same keystrokes, so running them together expands snippets twice
+	 * or unpredictably. They can be installed side by side, but only one should be enabled.
+	 */
+	originalPluginWarning() {
+		if (!this.app.plugins?.enabledPlugins?.has(ORIGINAL_PLUGIN_ID)) return;
+		const message = `${this.manifest.name}: the original Latex Suite is enabled too. Both react to the same keystrokes, so enable only one of them in Settings > Community plugins.`;
+		new Notice(message, 15000);
+		console.warn(message);
 	}
 
 	legacyEditorWarning() {
