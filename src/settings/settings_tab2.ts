@@ -54,6 +54,9 @@ type PopupPreviewSettingDefinition = Definition<
 	| "mathPreviewLivePreviewDisplay"
 >
 
+type AppearanceSettingDefinition = Definition<
+	| "centerDisplayMath"
+>
 type AutofractionSettingDefinition = Definition<
 	| "autofractionEnabled"
 	| "autofractionSymbol"
@@ -115,6 +118,7 @@ export class LatexSuiteSettingsTab2 extends SettingTab {
 			...this.getConcealDefinitions(),
 			...this.getColorHighlightBracketsDefinitions(),
 			...this.getPopupPreviewDefinitions(),
+			...this.getAppearanceDefinitions(),
 			...this.getAutofractionDefinitions(),
 			...this.getMatrixShortcutsDefinitions(),
 			...this.getTaboutDefinitions(),
@@ -418,6 +422,21 @@ export class LatexSuiteSettingsTab2 extends SettingTab {
 		return [{
 			type: "page",
 			name: t("math-preview.heading"),
+			items: settings,
+		}]
+	}
+
+	getAppearanceDefinitions(): SettingDefinitionItem[] {
+		const settings: AppearanceSettingDefinition[] = [
+			{
+				name: t("appearance.center-display-math.name"),
+				desc: this.renderHtml(t("appearance.center-display-math.desc")),
+				control: getToggleControl("centerDisplayMath")
+			},
+		]
+		return [{
+			type: "page",
+			name: t("appearance.heading"),
 			items: settings,
 		}]
 	}

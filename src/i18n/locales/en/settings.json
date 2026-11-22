@@ -76,6 +76,13 @@
 			"desc": "Whether to display the tooltip in live preview mode. The cursor and bracket highlighting will only be shown in this preview and not in obsidian's preview"
 		}
 	},
+	"appearance": {
+		"heading": "Appearance",
+		"center-display-math": {
+			"name": "Center display math",
+			"desc": "Center every line of rendered display math. MathJax right-aligns the lines of environments such as <code>align</code> and <code>align*</code> when they contain no <code>&amp;</code> alignment points. With this enabled, each line is centered instead. Equations that use <code>&amp;</code> keep their alignment, and <code>multline</code> and left-aligned arrays are left unchanged. Applies to reading view, live preview and the popup preview."
+		}
+	},
 	"auto-fraction": {
 		"heading": "Auto-fraction",
 		"enabled": {

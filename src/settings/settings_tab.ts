@@ -77,6 +77,7 @@ export class LatexSuiteSettingTab extends PluginSettingTab {
 		this.displayConcealSettings();
 		this.displayColorHighlightBracketsSettings();
 		this.displayPopupPreviewSettings();
+		this.displayAppearanceSettings();
 		this.displayAutofractionSettings();
 		this.displayMatrixShortcutsSettings();
 		this.displayTaboutSettings();
@@ -335,6 +336,21 @@ export class LatexSuiteSettingTab extends PluginSettingTab {
 					mathPreviewDependentSettings.forEach((setting) =>
 						setting.settingEl.toggleClass("hidden", !value),
 					);
+					await this.plugin.saveSettings();
+				}));
+	}
+
+	private displayAppearanceSettings() {
+		const containerEl = this.containerEl;
+		this.addHeading(containerEl, t("appearance.heading"), "align-center");
+
+		new Setting(containerEl)
+			.setName(t("appearance.center-display-math.name"))
+			.setDesc(renderHtml(t("appearance.center-display-math.desc")))
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.centerDisplayMath)
+				.onChange(async (value) => {
+					this.plugin.settings.centerDisplayMath = value;
 					await this.plugin.saveSettings();
 				}));
 	}

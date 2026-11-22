@@ -136,6 +136,26 @@
 	outline: unset;
 }
 
+/* Center display math (setting: Appearance > Center display math).
+ *
+ * MathJax renders multi-line environments without `&` alignment points (align, align*, aligned,
+ * split, ...) as a single column whose cells are right-aligned, so shorter lines hug the right edge
+ * of the longest one. Center every line of such tables instead.
+ *
+ * Only top-level tables of display math are affected. MathJax pads every row to the same number of
+ * cells, so a cell that is its row's only child belongs to a one-column table: any `&` adds columns,
+ * and those tables keep their alignment. Left-aligned cells (array{l}) are not matched, and multline
+ * (whose table carries data-width-includes-label) keeps its staggered layout.
+ * Applies to reading view, live preview and the popup preview alike. */
+body.latex-suite-center-display-math mjx-container[jax="CHTML"][display="true"] {
+	text-align: center;
+}
+
+body.latex-suite-center-display-math mjx-container[jax="CHTML"][display="true"] > mjx-math > mjx-mtable:not([data-width-includes-label]) > mjx-table > mjx-itable > * > mjx-mtd:only-child[style*="text-align: right"] {
+	/* MathJax sets the alignment as an inline style, so it can only be overridden with !important. */
+	text-align: center !important;
+}
+
 /* @settings
 name: Latex Suite
 id: obsidian-latex-suite

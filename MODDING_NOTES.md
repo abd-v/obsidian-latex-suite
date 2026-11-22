@@ -97,3 +97,11 @@ If no mode letter is given, the snippet runs in every mode.
 ## Public and plugin API
 
 `main.ts` exposes `snippet()`, `modifiedSyntaxTree`, `disableMath`, `onUpdate`, and `api.{effects, fields, plugin, shortcuts, snippetApi}`. Typings are in `src/api.d.ts`.
+
+## Customisations in this fork (branch `custom`)
+
+The `custom` branch is built on `v1.14.5-base`.
+
+| Change | Files | Notes |
+|---|---|---|
+| **Center display math** setting (Appearance section, on by default) | `styles.css`, `src/main.ts` (`updateAppearance`, `CENTER_DISPLAY_MATH_CLASS`), `src/settings/settings.ts`, `src/settings/empty_settings.ts`, `src/settings/settings_tab.ts`, `src/settings/settings_tab2.ts`, `src/i18n/locales/en/settings.json` | Pure CSS behind the body class `latex-suite-center-display-math`, which is toggled on the main window and on pop-outs. The rule centers the cells of top-level, one-column, right-aligned MathJax tables: `align`, `align*`, `aligned` and `split` without `&`. Tables with `&` columns, `multline` (marked by `data-width-includes-label`) and `array{l}` keep their layout. Verified against MathJax 3.2.2 CHTML output, with and without equation numbering |

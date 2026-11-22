@@ -37,6 +37,9 @@ import { default_mapping, MappingSchema, type RawConcealMapping } from "./editor
 import { serializeSnippetLike } from "./snippets/snippets";
 import { mathlessArgsSchema, type MathlessMacroArgs } from "./editor_context/default_text_areas";
 
+/** Body class that styles.css uses to center display math. */
+const CENTER_DISPLAY_MATH_CLASS = "latex-suite-center-display-math";
+
 export default class LatexSuitePlugin extends Plugin implements LatexSuitePluginPublicApi {
 	settings: LatexSuitePluginSettings = EMPTY_SETTINGS;
 	CMSettings: LatexSuiteCMSettings = processLatexSuiteSettings(this.settings, {
@@ -50,6 +53,8 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 	rawMacroArgs: MathlessMacroArgs[] = [];
 	editorExtensions: Extension[] = [];
 	watcherCloser?: () => void;
+	/** Documents (main window and pop-outs) whose body carries the appearance classes. */
+	appearanceDocuments = new Set<Document>([activeDocument]);
 	disableMath = (view: EditorView) => {
 		try {
 			getContextPlugin(view, false).disableMath();
@@ -154,6 +159,21 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 		this.legacyEditorWarning();
 		this.IMEEditorWarning();
 
+		// Appearance classes have to be applied to the body of every window, including pop-outs.
+		this.app.workspace.onLayoutReady(() => {
+			this.app.workspace.iterateAllLeaves((leaf) => {
+				this.appearanceDocuments.add(leaf.view.containerEl.doc);
+			});
+			this.updateAppearance();
+		});
+		this.registerEvent(this.app.workspace.on("window-open", (win) => {
+			this.appearanceDocuments.add(win.doc);
+			this.updateAppearance();
+		}));
+		this.registerEvent(this.app.workspace.on("window-close", (win) => {
+			this.appearanceDocuments.delete(win.doc);
+		}));
+
 		// Register Latex Suite extensions and optional editor extensions for editor enhancements
 		this.registerEditorExtension(this.editorExtensions);
 
@@ -163,7 +183,18 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 		this.addEditorCommands();
 	}
 
-	onunload() {}
+	onunload() {
+		for (const doc of this.appearanceDocuments) {
+			doc.body.removeClass(CENTER_DISPLAY_MATH_CLASS);
+		}
+	}
+
+	/** Toggle the body classes that styles.css uses for appearance settings. */
+	updateAppearance() {
+		for (const doc of this.appearanceDocuments) {
+			doc.body.toggleClass(CENTER_DISPLAY_MATH_CLASS, this.settings.centerDisplayMath);
+		}
+	}
 
 	legacyEditorWarning() {
 		// legacy editor existed till 1.5.0
@@ -321,6 +352,7 @@ export default class LatexSuitePlugin extends Plugin implements LatexSuitePlugin
 		if (becauseFileLocationUpdated) {
 			this.watchFiles();
 		}
+		this.updateAppearance();
 		const snippetAndVariables = await this.getSnippets(becauseFileLocationUpdated, becauseFileUpdated, forceLoad) ?? {
 			snippets: [],
 			snippetVariables: {},
